@@ -1,0 +1,55 @@
+# 封装的Cookies操作
+
+**声名一个数据集合**
+
+```
+`var` `listString = ``new` `List<``string``>() { ``"a"``, ``"b"``, ``"c"` `};``//将listString存进Cookies`
+```
+
+
+
+**缓存key**
+
+```
+`string` `key = ``"cmkey"``;`
+```
+
+
+
+**获取实例**
+
+```
+`var` `cookiesManager = CookiesManager<List<``string``>>.GetInstance();``//设置缓存类型为listString的类型`
+```
+
+
+
+**插入Cookies**
+
+```
+`cookiesManager.Add(key,listString, 60* 30);``//过期30分钟`
+```
+
+
+
+**获取Cookies**
+
+```
+`List<``string``> cacheList=cacheManager[key];`
+```
+
+
+
+**其它方法**
+
+```
+`cookiesManager.ContainsKey(key);``//是否存在cookies``cookiesManager.Remove(key);``//删除``cookiesManager.RemoveAll(c=>c.Contains(``"sales_"``));``//删除key包含sales_缓存``cookiesManager.GetAllKey();``//获取所有key`
+```
+
+
+
+
+
+```
+`    ``/// <summary>``    ``/// ** 描述：cookies操作类``    ``/// ** 创始时间：2015-6-9``    ``/// ** 修改时间：-``    ``/// ** 作者：sunkaixuan``    ``/// </summary>``    ``/// <typeparam name="V">值</typeparam>``    ``public` `class` `CookiesManager<V> ``    ``{` `        ``#region 全局变量``        ``private` `static` `CookiesManager<V> _instance = ``null``;``        ``private` `static` `readonly` `object` `_instanceLock = ``new` `object``();``        ``#endregion` `        ``/// <summary>         ``        ``/// 获取实例 （单例模式）       ``        ``/// </summary>         ``        ``/// <returns></returns>         ``        ``public` `static` `CookiesManager<V> GetInstance()``        ``{``            ``if` `(_instance == ``null``)``                ``lock` `(_instanceLock)``                    ``if` `(_instance == ``null``)``                        ``_instance = ``new` `CookiesManager<V>();``            ``return` `_instance;``        ``}`  `        ``/// <summary>``        ``/// 添加cookies ,注意value最大4K (默认1天)``        ``/// </summary>``        ``/// <param name="key">key</param>``        ``/// <param name="value">value</param>``        ``public` `override` `void` `Add(``string` `key, V value)``        ``{``            ``Add(key, value, Day);``        ``}``        ``/// <summary>``        ``/// 添加cookies ,注意value最大4K``        ``/// </summary>``        ``/// <param name="key"></param>``        ``/// <param name="value"></param>``        ``/// <param name="cookiesDurationInSeconds">有效时间单位秒</param>``        ``public` `override` `void` `Add(``string` `key, V value, ``int` `cookiesDurationInSeconds)``        ``{``            ``HttpResponse response = HttpContext.Current.Response;``            ``if` `(response != ``null``)``            ``{``                ``HttpCookie cookie = response.Cookies[key];``                ``if` `(cookie != ``null``)``                ``{``                    ``if` `(``typeof``(V) == ``typeof``(``string``))``                    ``{``                        ``string` `setValue = value.ToString();``                        ``Add(key, cookiesDurationInSeconds, cookie, setValue, response);``                    ``}``                    ``else``                    ``{``                        ``System.Web.Script.Serialization.JavaScriptSerializer jss =``                         ``new` `System.Web.Script.Serialization.JavaScriptSerializer();``                        ``string` `setValue = jss.Serialize(value);``                        ``Add(key, cookiesDurationInSeconds, cookie, setValue, response);` `                    ``}``                ``}``            ``}``        ``}``        ``/// <summary>``        ``/// 添加cookies ,注意value最大4K``        ``/// </summary>``        ``/// <param name="key"></param>``        ``/// <param name="value"></param>``        ``/// <param name="cookiesDurationInSeconds">有效时间单位秒</param>``        ``public` `void` `Add(``string` `key, V value, ``int` `cookiesDurationInSeconds, ``string` `path, ``string` `domain=``null``)``        ``{``            ``HttpResponse response = HttpContext.Current.Response;``            ``if` `(response != ``null``)``            ``{``                ``HttpCookie cookie = response.Cookies[key];``                ``if` `(!``string``.IsNullOrEmpty(path))``                    ``cookie.Path = path;``                ``if` `(!``string``.IsNullOrEmpty(domain))``                    ``cookie.Domain = domain;``                ``if` `(cookie != ``null``)``                ``{``                    ``if` `(``typeof``(V) == ``typeof``(``string``))``                    ``{``                        ``string` `setValue = value.ToString();``                        ``Add(key, cookiesDurationInSeconds, cookie, setValue, response);``                    ``}``                    ``else``                    ``{``                        ``System.Web.Script.Serialization.JavaScriptSerializer``                         ``jss = ``new` `System.Web.Script.Serialization.JavaScriptSerializer();``                        ``string` `setValue = jss.Serialize(value);``                        ``Add(key, cookiesDurationInSeconds, cookie, setValue, response);` `                    ``}``                ``}``            ``}``        ``}`  `        ``private` `void` `Add(``string` `key, ``int` `cookiesDurationInSeconds, HttpCookie cookie, ``        ``string` `setValue, HttpResponse response)``        ``{``            ``setValue = context.Server.UrlEncode(setValue);``            ``if` `(!``string``.IsNullOrEmpty(key) && cookie.HasKeys)``                ``cookie.Values.Set(key, setValue);``            ``else``                ``if` `(!``string``.IsNullOrEmpty(setValue))``                    ``cookie.Value = setValue;``            ``if` `(cookiesDurationInSeconds > 0)``                ``cookie.Expires = DateTime.Now.AddSeconds(cookiesDurationInSeconds);``            ``response.SetCookie(cookie);``        ``}` `        ``public` `override` `bool` `ContainsKey(``string` `key)``        ``{``            ``return` `Get(key) != ``null``;``        ``}` `        ``public` `override` `V Get(``string` `key)``        ``{``            ``string` `value = ``string``.Empty;``            ``if` `(context.Request.Cookies[key] != ``null``)``                ``value = context.Request.Cookies[key].Value;``            ``value = context.Server.UrlDecode(value);``            ``if` `(``typeof``(V) == ``typeof``(``string``))``            ``{``                ``return` `(V)Convert.ChangeType(value, ``typeof``(V));``            ``}``            ``else``            ``{``                ``System.Web.Script.Serialization.JavaScriptSerializer jss = ``new` `                ``System.Web.Script.Serialization.JavaScriptSerializer();``                ``return` `jss.Deserialize<V>(value);``            ``}``        ``}` `        ``public` `override` `IEnumerable<``string``> GetAllKey()``        ``{``            ``var` `allKeyList = context.Request.Cookies.AllKeys.ToList();``            ``foreach` `(``var` `key ``in` `allKeyList)``            ``{``                ``yield ``return` `key;``            ``}``        ``}` `        ``public` `override` `void` `Remove(``string` `key)``        ``{``            ``HttpResponse response = HttpContext.Current.Response;``            ``HttpCookie cookie = HttpContext.Current.Request.Cookies[key];``            ``if` `(cookie != ``null``)``            ``{``                ``cookie.Expires = DateTime.Now.AddDays(-800);``                ``response.Cookies.Add(cookie);``            ``}``        ``}`  `        ``public` `override` `void` `RemoveAll()``        ``{``            ``foreach` `(``var` `key ``in` `GetAllKey())``            ``{``                ``Remove(key);``            ``}``        ``}` `        ``public` `override` `void` `RemoveAll(Func<``string``, ``bool``> removeExpression)``        ``{``            ``var` `removeList = GetAllKey().Where(removeExpression).ToList();``            ``foreach` `(``var` `key ``in` `removeList)``            ``{``                ``Remove(key);``            ``}``        ``}` `        ``public` `override` `V ``this``[``string` `key]``        ``{``            ``get` `{ ``return` `Get(key); }``        ``}``    ``}`
+```
