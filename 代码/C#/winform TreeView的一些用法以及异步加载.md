@@ -1,8 +1,7 @@
-对于树型控件的一些方法，以及异步加载。
-
+树型控件的一些方法，以及异步加载。
 下面是TreeView的一些用法
 
-```
+```c#
 private void BindTreeView()
 {
     treeView1.LabelEdit = false;//不可编辑
@@ -45,7 +44,7 @@ private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
 
 基本用法有了，下面，就把我写的异步加载列表的方法写进去了，因为是参考网上的方法临时 写的，可能会有些不足之处，也有可以改进，优化的一些方法
 
-```
+```c#
  DataTable dt = data.createDT();
         #region 树的异步加载
         /// <summary>
@@ -119,21 +118,21 @@ private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
 
 在刚载入时调用 
 
-```
+```c#
  private void Form1_Load(object sender, EventArgs e)
         {           make_rootView();   }
 ```
 
 在树型控件的事件treeView1_BeforeExpand调用 
 
-```
+```c#
 private void treeView1_BeforeExpand(object sender, TreeViewCancelEventArgs e)
         { make_NodeView(sender, e);   }
 ```
 
 下面是我的数据源，我是根据下面这个表格的结构来写代码 ，根据结构的不一样，代码 也应做相应的改变
 
-```
+```c#
 public class data
     {
         public static DataTable createDT()
@@ -176,4 +175,3 @@ public class data
     }
 ```
 
-以上表结构是从网上摘录下来的！！！

@@ -1,0 +1,141 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using MySql.Data.MySqlClient;
+
+namespace easyDevice
+{
+    public partial class MainFrm : Form
+    {
+        public MainFrm()
+        {
+            InitializeComponent();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            string connStr = @"server=127.0.0.1;uid=root;pwd=";
+            MySqlConnection conn = new MySqlConnection(connStr);
+            try
+            {
+                conn.Open();
+                MessageBox.Show("数据库连接成功");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                throw;
+            }
+            finally
+            {
+                conn.Close();
+            }
+        }
+
+        private void MainFrm_Load(object sender, EventArgs e)
+        {
+           
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            string connStr = @"server=127.0.0.1;uid=root;pwd=";
+            MySqlConnection conn = new MySqlConnection(connStr);
+            try
+            {
+                conn.Open();
+                //MessageBox.Show("数据库连接成功");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                throw;
+            }
+            finally
+            {
+                //conn.Close();
+            }
+            MySqlCommand cmd = new MySqlCommand("select Count(*) from information_schema.schemata where schema_name='test1'", conn);
+            try
+            {
+                if (cmd.ExecuteReader().Read())
+                {
+                    MessageBox.Show("数据库存在");
+                }
+                else
+                {
+
+                    MessageBox.Show("数据库不存在");
+                    //cmd.ExecuteNonQuery(string.Format("create database test1"));
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+            
+           
+
+
+
+
+            conn.Close();
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            string connStr = @"server=localhost;Persist Security Info=yes;User Id=root;password=;Charset=utf8;";
+            MySqlConnection conn = new MySqlConnection(connStr);
+            try
+            {
+                conn.Open();
+                //MessageBox.Show("数据库连接成功");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                throw;
+            }
+            finally
+            {
+                //conn.Close();
+            }
+            //MySqlCommand cmd = new MySqlCommand("select Count(*) from information_schema.schemata where schema_name='test1'", conn);
+            MySqlCommand cmd = new MySqlCommand(@"select table_name from information_schema.tables where table_name = 'db1' and table_schema ='mysql'", conn);
+            try
+            {
+                if (cmd.ExecuteScalar() != null)
+                {
+                    MessageBox.Show("数据表存在");
+                }
+                else
+                {
+
+                    MessageBox.Show("数据表不存在");
+                   
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                throw;
+            }
+
+
+
+
+
+
+            conn.Close();
+        }
+    }
+    
+}
+

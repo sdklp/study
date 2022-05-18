@@ -1,5 +1,3 @@
-## WinForm轻松实现自定义分页
-
 以前都是做web开发，最近接触了下WinForm，发现WinForm分页控件好像都没有，网上搜索了一下，发现有很多网友写的分页控件，分页效果应该都能实现吧，只是其风格都不是很符合我想要的。做web的时候，我习惯了Extjs的Grid分页效果，所以也想在WinForm中做个类似的效果，所以咬咬牙，做个山寨版本的吧，虽然自己写费时费力，在项目进度考虑中不是很可取，但是还是特别想山寨一回，做自己喜欢的风格。
 
 按照惯例，还是先看看实现效果图吧（有图有真像，才好继续下文呀）
@@ -344,7 +342,7 @@ Extjs的动画效果我们暂时就不实现了，这里只做个外观看起来
 299 this.paging1.EventPaging += new CHVM.PagingControl.EventPagingHandler (this.paging1_EventPaging);
 ```
 
-[![复制代码](https://common.cnblogs.com/images/copycode.gif)](javascript:void(0);)
+
 
  
 
@@ -358,11 +356,7 @@ Extjs的动画效果我们暂时就不实现了，这里只做个外观看起来
 
  
 
-[![复制代码](https://common.cnblogs.com/images/copycode.gif)](javascript:void(0);)
 
-![img](https://images.cnblogs.com/OutliningIndicators/ExpandedBlockStart.gif)
-
-![复制代码](https://common.cnblogs.com/images/copycode.gif)
 
 ```
   1  /// <summary>
@@ -494,7 +488,109 @@ http://xuzhihong1987.blog.163.com/blog/static/2673158720112943356111/
 
  
 
-![img](https://images.cnblogs.com/OutliningIndicators/ContractedBlock.gif) View Code
+```c#
+1  /// <summary>
+ 2 
+ 3         /// gv显示列设置
+ 4 
+ 5         /// </summary>
+ 6 
+ 7         /// <returns></returns>
+ 8 
+ 9         public Dictionary<string, string> GetGvColumnsDict()
+10 
+11         {
+12 
+13             Dictionary<string, string> dict = new Dictionary<string, string>();
+14 
+15             dict.Add("FTYPE", "操作类型");
+16 
+17             dict.Add("FOPTOBJECT", "操作对象");
+18 
+19             dict.Add("FCONTENT", "操作内容");
+20 
+21             dict.Add("FOperator", "操作人员");
+22 
+23             return dict;
+24 
+25         }
+26 
+27  
+28 
+29 DataGridViewHelp.DisplayColList是一个静态方法，为一个辅助类：
+30 
+31         /// <summary>
+32 
+33         /// 替换列表
+34 
+35         /// </summary>
+36 
+37         /// <param name="dgv">类表名称</param>
+38 
+39         /// <param name="dic">数据</param>
+40 
+41         /// <param name="isRM">是否显示序列号</param>
+42 
+43         public static void DisplayColList(DataGridView dgv, Dictionary<string, string> dic)//, bool isRM
+44 
+45         {
+46 
+47             _dgv = dgv;
+48 
+49             dgv.RowsDefaultCellStyle.BackColor = Color.FromArgb(255, 255, 255);//第一行   
+50 
+51             dgv.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(231, 232, 239);//第二行   
+52 
+53             dgv.GridColor = Color.FromArgb(207, 208, 216);//
+54 
+55             dgv.RowTemplate.Height = 25;//列宽
+56 
+57             dgv.AllowUserToAddRows=false;//无空行
+58 
+59             dgv.CellBorderStyle = DataGridViewCellBorderStyle.SingleVertical;
+60 
+61             dgv.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+62 
+63             dgv.AllowUserToOrderColumns = true;
+64 
+65             dgv.RowPostPaint += new DataGridViewRowPostPaintEventHandler(dgv_RowPostPaint);
+66 
+67             dgv.CellPainting += new DataGridViewCellPaintingEventHandler(dgv_CellPainting);//列头样式
+68 
+69             dgv.CellFormatting += new DataGridViewCellFormattingEventHandler(dgv_CellFormatting);//选中行样式
+70 
+71  
+72 
+73             foreach (KeyValuePair<string, string> cl in dic)
+74 
+75             {
+76 
+77                 dgv.AutoGenerateColumns = false;
+78 
+79                 DataGridViewTextBoxColumn obj = new DataGridViewTextBoxColumn();
+80 
+81                 obj.DataPropertyName = cl.Key;
+82 
+83                 obj.HeaderText = cl.Value;
+84 
+85                 obj.Name = cl.Key;
+86 
+87                 obj.Width = 100;
+88 
+89                 //obj.DefaultCellStyle.Padding.All = 10;
+90 
+91                 obj.Resizable = DataGridViewTriState.True;
+92 
+93                 dgv.Columns.AddRange(new DataGridViewColumn[] { obj });
+94 
+95             }
+96 
+97         }
+98 
+99  
+```
+
+
 
  
 
@@ -506,6 +602,7 @@ http://xuzhihong1987.blog.163.com/blog/static/2673158720112943356111/
 
 DataGridView数据动态绑定，综合查询，我这里用的是Oracle数据库，如果用LINQ语法的话查询数据会比较方便，写起代码也会显得很优雅。
 
+```
 /// <summary>
 /// 获取条件查询数据
 /// </summary>
@@ -568,6 +665,7 @@ DataTable dt = DataCon.Query (strSql).Tables[0];
 dt.TableName = DataCon.GetSingle (strSqlGetCount) + "";
 return dt;
 }
+```
 
 ==========================================================================
 
@@ -579,9 +677,7 @@ C#开发WinForm分页控件
 
  
 
-**[WinFormPager.dll控件下载地址](http://www.everbox.com/f/MfISH5ME61QklBUBUJWWjzhykJ) [WinFormPager源代码下载地址](http://www.everbox.com/f/TqXCCnDkFoEhnC2VmjAMmskZfL)**
-
- 
+## WinFormPager.dll控件下载地址
 
 以下是调用分页控件**WinFormPager**方法**：**
 
@@ -623,9 +719,221 @@ using System.Text;
 using System.Windows.Forms;
 using DevComponents.DotNetBar;
 
- 
+namespace WinFormPager
 
-namespace WinFormPager{    public partial class WinFormPager : UserControl    {        int currentPage = 1;//当前页         /// <summary>        /// 当前页         /// </summary>        [Description("当前页"), Category("分页设置")]        public int CurrentPage        {            get { return currentPage; }            set { currentPage = value; }        }        int pageSize = 10;//每页显示条数        /// <summary>        /// 每页显示条数        /// </summary>        [Description("每页显示条数"), Category("分页设置")]         public int PageSize        {            get { return pageSize; }            set { pageSize = value; }        }        int pageTotal = 0;//总共多少页         /// <summary>        /// 总共多少页         /// </summary>        [Description("总共多少页"), Category("分页设置")]         public int PageTotal        {            get { return pageTotal; }            set { pageTotal = value; }        }        int currentGroup = 1;//当前组        /// <summary>        /// 当前组        /// </summary>        [Description("当前组"), Category("分页设置")]         public int CurrentGroup        {            get { return currentGroup; }            set { currentGroup = value; }        }        int groupSize = 10;//每组显示页数        /// <summary>        /// 每组显示页数        /// </summary>        [Description("每组显示页数"), Category("分页设置")]         public int GroupSize        {            get { return groupSize; }            set { groupSize = value; }        }        int groupTotal = 0;//总共多少组        /// <summary>        /// 总共多少组        /// </summary>        [Description("总共多少组"), Category("分页设置")]          public int GroupTotal        {            get { return groupTotal; }            set { groupTotal = value; }        }        /// <summary>        /// 总的记录数        /// </summary>        private int recordCount;//总的记录数        [Description("总的记录数"), Category("分页设置")]         public int RecordCount        {            get { return recordCount; }            set             {                recordCount = value;                InitData();// 初始化数据                PageChanged();//当前页改变事件            }        }        private int buttonWidth = 20;//按钮宽度        /// <summary>        /// 按钮宽度        /// </summary>        [Description("按钮宽度"), Category("分页设置")]         public int ButtonWidth        {            get { return buttonWidth; }            set { buttonWidth = value; }        }        private int buttonHeight = 23;//按钮高度        /// <summary>        /// 按钮高度        /// </summary>        [Description("按钮高度"), Category("分页设置")]         public int ButtonHeight        {            get { return buttonHeight; }            set { buttonHeight = value; }        }        private int buttonDistance = 0;//按钮间距离        /// <summary>        /// 按钮间距离        /// </summary>        [Description("按钮间距离"), Category("分页设置")]         public int ButtonDistance        {            get { return buttonDistance; }            set { buttonDistance = value; }        }        List<Control> listControl = new List<Control>();//分页的按钮集合
+{    
+
+public partial class WinFormPager : UserControl   
+
+ {       
+
+ int currentPage = 1;//当前页         
+
+/// <summary>        
+
+/// 当前页         
+
+/// </summary>        
+
+[Description("当前页"), Category("分页设置")]        
+
+public int CurrentPage        
+
+{            
+
+get { return currentPage; }            
+
+set { currentPage = value; }        
+
+}        
+
+int pageSize = 10;//每页显示条数        
+
+/// <summary>        
+
+/// 每页显示条数        
+
+/// </summary>        
+
+[Description("每页显示条数"), Category("分页设置")]         
+
+public int PageSize        
+
+{            
+
+get { return pageSize; }            
+
+set { pageSize = value; }        
+
+}       
+
+ int pageTotal = 0;//总共多少页         
+
+/// <summary>        
+
+/// 总共多少页         
+
+/// </summary>        
+
+[Description("总共多少页"), Category("分页设置")]         
+
+public int PageTotal        
+
+{            
+
+get { return pageTotal; }            
+
+set { pageTotal = value; }        
+
+}        
+
+int currentGroup = 1;//当前组       
+
+ /// <summary>        
+
+/// 当前组        
+
+/// </summary>        
+
+[Description("当前组"), Category("分页设置")]         
+
+public int CurrentGroup        
+
+{           
+
+ get { return currentGroup; }            
+
+set { currentGroup = value; }       
+
+ }        
+
+int groupSize = 10;//每组显示页数        
+
+/// <summary>        
+
+/// 每组显示页数        
+
+/// </summary>        
+
+[Description("每组显示页数"), Category("分页设置")]         
+
+public int GroupSize      
+
+  {           
+
+ get { return groupSize; }            
+
+set { groupSize = value; }        
+
+}       
+
+ int groupTotal = 0;//总共多少组       
+
+ /// <summary>        
+
+/// 总共多少组        
+
+/// </summary>       
+
+ [Description("总共多少组"), Category("分页设置")]          
+
+public int GroupTotal       
+
+ {            
+
+get { return groupTotal; }            
+
+set { groupTotal = value; }       
+
+ }       
+
+ /// <summary>        
+
+/// 总的记录数        
+
+/// </summary>        
+
+private int recordCount;//总的记录数        
+
+[Description("总的记录数"), Category("分页设置")]         
+
+public int RecordCount       
+
+ {            
+
+get { return recordCount; }            
+
+set { recordCount = value;  }             
+
+ InitData();// 初始化数据                
+
+PageChanged();//当前页改变事件            
+
+}        
+
+}       
+
+ private int buttonWidth = 20;//按钮宽度        
+
+/// <summary>        
+
+/// 按钮宽度        
+
+/// </summary>        
+
+[Description("按钮宽度"), Category("分页设置")]         
+
+public int ButtonWidth        
+
+{            
+
+get { return buttonWidth; }            
+
+set { buttonWidth = value; }        
+
+}       
+
+ private int buttonHeight = 23;//按钮高度        
+
+/// <summary>        
+
+/// 按钮高度        
+
+/// </summary>        
+
+[Description("按钮高度"), Category("分页设置")]         
+
+public int ButtonHeight        
+
+{            
+
+get { return buttonHeight; }            
+
+set { buttonHeight = value; }        
+
+}        
+
+private int buttonDistance = 0;//按钮间距离        
+
+/// <summary>        
+
+/// 按钮间距离        
+
+/// </summary>       
+
+ [Description("按钮间距离"), Category("分页设置")]         
+
+public int ButtonDistance        
+
+{            
+
+get { return buttonDistance; }            
+
+set { buttonDistance = value; }        
+
+}        
+
+List<Control> listControl = new List<Control>();//分页的按钮集合
 
  
 
@@ -854,15 +1162,13 @@ namespace WinFormPager{    public partial class WinFormPager : UserCon
   }
 }
 
+
+
 ===============================================================================
 
-http://liyaguang20111105.blog.163.com/blog/static/19929420220146283255809/ 
+
 
 在winform的设计中，要实现对DataGridView控件的分页功能，需要两个控件：BindingSource、BindingNavigator，根据需求可对BindingNavigator进行自由的扩展，下图的示例则是根据一般需求对分页功能的实现。红色区域是对BindingNavigator控件扩展后的效果。
-
- 
-
-![winform中DataGridView实现分页功能 - 李亚光 - 李亚光 廊坊师范学院九期信息技术提高班](http://img0.ph.126.net/51phm9FizlPaXHm6AvCxbA==/1361494462367502108.png)
 
  
 
@@ -1329,127 +1635,4 @@ private void txtRecordNumOfPage_TextChanged(object sender, EventArgs e)
  
 
 ====================================================================
-
-**C# WinForm中DataGirdView简单分页功能**
-
-```c#
-//1.定义变量
-　　
-int pageSize = 0; //每页显示行数
-int nMax = 0; //总记录数
-int pageCount = 0; //页数＝总记录数/每页显示行数
-int pageCurrent = 0; //当前页号
-int nCurrent = 0; //当前记录行
-//PS (在bdnInfo中添加上一页, 下一页, lblPageCountText, txtCurrentPage.Text)
-//2.在窗体内分别添加BindingNavigator (bdnInfo), BindingSource (bdsInfo), DataGirdView1 //(dgvInfo)
-//3.绑定dgvInfo数据
-DataSet ds = new DataSet();
-ds = userBLL.GetModel();
-DaTaTable dt = new DaTaTable ();
-dt = ds.Tables[0];
-this.dgvInfo.DataSource = dt;
-InitDataSet();
-
-//4.初始化dgvInfo
-private void InitDataSet()
-{
-  pageSize = 10; //设置页面行数
-  nMax = dt.Rows.Count;
-  pageCount = (nMax / pageSize); //计算出总页数
-  if ( (nMax % pageSize) > 0)
-  {
-    pageCount++;
-  }
-  pageCurrent = 1; //当前页数从1开始
-  nCurrent = 0; //当前记录数从0开始
-  LoadData();
-}
-
-//5.加载数据
-private void LoadData()
-{
-  int nStartPos = 0; //当前页面开始记录行
-  int nEndPos = 0; //当前页面结束记录行
-  System.Data.DataTable dtTemp = dt.Clone(); //克隆DataTable结构框架
-  if (dtTemp != null || dtTemp.Rows.Count > 0)
-  {
-    if (pageCurrent == pageCount)
-    {
-      nEndPos = nMax;
-    }
-    else
-    {
-      nEndPos = pageSize * pageCurrent;
-    }
-    nStartPos = nCurrent;
-    lblPageCount.Text = pageCount.ToString();//在bdnInfo中添加lable记录总页数
-    txtCurrentPage.Text = Convert.ToString (pageCurrent); //在bdnInfo中添加Textbox记录当前页数
-    //从元数据源复制记录行
-    for (int i = nStartPos; i < nEndPos; i++)
-    {
-      if (i < dt.Rows.Count)
-      {
-        dtTemp.ImportRow (dt.Rows[i]);
-        nCurrent++;
-      }
-    }
-    bdsInfo.DataSource = dtTemp;
-    bdnInfo.BindingSource = bdsInfo;
-    dgvInfo.DataSource = bdsInfo;
-  }
-  else
-  {
-    return;
-  }
-}
-
-//6.在bdnInfo的ItemClicked事件中添加代码
-private void bdnInfo_ItemClicked (object sender, ToolStripItemClickedEventArgs e)
-{
-  if (e.ClickedItem.Text == "上一页")
-  {
-    pageCurrent--;
-    if (pageCurrent <= 0)
-    {
-      MessageBox.Show ("已经是第一页，请点击“下一页”查看！");
-      return;
-    }
-    else
-    {
-      if (pageCurrent > pageSize)
-      {
-        pageCurrent = Convert.ToInt32 (lblPageCount.Text);
-      }
-      else if (pageCurrent > Convert.ToInt32 (lblPageCount.Text) )
-      {
-        pageCurrent = Convert.ToInt32 (lblPageCount.Text);
-      }
-      nCurrent = pageSize * (pageCurrent - 1);
-    }
-    LoadData();
-  }
-  if (e.ClickedItem.Text == "下一页")
-  {
-    if (pageCurrent <= 0)
-    {
-      pageCurrent = 1;
-    }
-    pageCurrent++;
-    if (pageCurrent > pageCount)
-    {
-      MessageBox.Show ("已经是最后一页，请点击“上一页”查看！");
-      return;
-    }
-    else
-    {
-      nCurrent = pageSize * (pageCurrent - 1);
-      if (nCurrent <= 0)
-      {
-        return;
-      }
-    }
-    LoadData();
-  }
-}
-```
 

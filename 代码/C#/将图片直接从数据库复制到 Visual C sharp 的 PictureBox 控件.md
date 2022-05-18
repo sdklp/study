@@ -1,9 +1,10 @@
 # 将图片直接从数据库复制到 Visual C sharp 的 PictureBox 控件
 
+
+
 本文介绍如何将数据库中存储的图像直接复制到 Windows Form 上的 PictureBox 控件中，而无需将图像保存到文件中。
 
 *原始产品版本：*  Visual C#
-*原始 KB 编号：*  317701
 
 ## 摘要
 
